@@ -1,0 +1,60 @@
+{
+	"Name":	"Fermi-GBM_Final_retract",
+	"ProposalDetails": {
+		"ProposalID" : 2,
+		"ProposalPI" : "abc@abc.com",
+		"ProposalType": "TH ToO",
+		"ProposalTitle" : "Fermi-GBM GRB Folllow-up"
+	},
+	"ObservationConfig": {
+		"Priority": 100,
+		"IntendedAction": "retract",
+		"Urgency": "rapid-now",
+		"UseCustomCoords" : false,
+		"MaxExposure": "0 h",
+		"NumberObservationBlocks": 4,
+		"PointingMode" : {
+			"Type": "Wobble",
+			"offset": "0.7 deg",
+			"angle": "0.7 deg"
+		},
+		"RTA_configs": {
+			"ShortTransient": true,
+			"Default": true
+		},
+		"MinTelescopes" : {
+			"MinLSTs" : 0,
+			"MinMSTs" : 0,
+			"MinSSTs" : 0
+		}
+	},
+	"AllowedAlertTypes" : {
+		"Fermi_GBM_Gnd_Pos" : ["Fermi", "GBM_Gnd_Pos"]
+	},
+	"ProcessingCuts": {
+		"CommonCuts": {
+			"currently_observed": [true, "=="],
+			"position_uncertainy": ["3 deg", "<"]
+		},
+		"CustomCuts": {
+		}
+	},
+	"ObservationWindowRequirements" : {
+		"MaximumZenithAngle" : [60, "deg"],
+		"MinimumWindowDuration" : [10, "min"],
+		"MaximumDelayToEvent" : [10, "hour"],
+		"SkyQuality" : {
+			"min_nsb_range": "0 Hz",
+			"max_nsb_range": "1 GHz",
+			"illumination": "0.7"
+		}
+	},
+	"Notifications" : {
+		"NotifySAG_OnReceived" : true,
+		"NotifySAG_OnCriteriaFulfilled" : true,
+		"NotifyHMI_OnReceived" : false,
+		"NotifyHMI_OnCriteriaFulfilled" : true
+	},
+	"DetectionsPublic" : true,
+	"ActionPublic" : true
+}
