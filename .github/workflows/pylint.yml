@@ -20,4 +20,5 @@ jobs:
         pip install -r requirements.txt
     - name: Analysing the code with pylint
       run: |
-        pylint `ls -R|grep .py$|xargs` --ignored-classes=astropy.units
+        pylint alert_processor broker_system communicator data_models utilities --ignored-classes=astropy.units
+        
