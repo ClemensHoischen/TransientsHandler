@@ -1,0 +1,65 @@
+{
+	"Name": "SWIFT_BAT_Short_Delay",
+	"ProposalDetails": {
+		"ProposalID" : 1,
+		"ProposalPI" : "xyz@abc.com",
+		"ProposalType": "TH ToO",
+		"ProposalTitle" : "Swift BAT GRB Folllow-up"
+	},
+	"ObservationConfig": {
+		"Priority": 30,
+		"IntendedAction": "trigger",
+		"Urgency": "soon",
+		"UseCustomCoords": false,
+		"MaxExposure": "3 h",
+		"NumberObservationBlocks": 4,
+		"PointingMode" : {
+			"Type": "Wobble",
+			"offset": "0.7 deg",
+			"angle": "0.7 deg"
+		},
+		"RTA_configs": {
+			"ShortTransient": true,
+			"Default": true
+		},
+		"MinTelescopes" : {
+			"MinLSTs" : 0,
+			"MinMSTs" : 0,
+			"MinSSTs" : 0
+		}
+	},
+	"AllowedAlertTypes" : {
+		"SwiftBATGRBPos" : ["SWIFT", "BAT_GRB_Pos"]
+	},
+	"ProcessingCuts": {
+		"CommonCuts": {
+			"max_delay": ["80min", ">"]
+		},
+		"CustomCuts": {
+			"swift_grb_cuts.GRB_selection": [true, "=="]
+		}
+	},
+	"ObservationWindowRequirements" : {
+		"MaximumZenithAngle" : [60, "deg"],
+		"MinimumWindowDuration" : [10, "min"],
+		"MaximumDelayToEvent" : [10, "hour"],
+		"SkyQuality" : {
+			"min_nsb_range": "0 Hz",
+			"max_nsb_range": "1 GHz",
+			"illumination": "0.7"
+		}
+	},
+	"MinTelescopes" : {
+		"Min_LSTs" : 0,
+		"Min_MSTs" : 0,
+		"Min_SSTs" : 0
+	},
+	"Notifications" : {
+		"NotifySAG_OnReceived" : true,
+		"NotifySAG_OnCriteriaFulfilled" : true,
+		"NotifyHMI_OnReceived" : true,
+		"NotifyHMI_OnCriteriaFulfilled" : true
+	},
+	"DetectionsPublic" : true,
+	"ActionPublic" : true
+}
