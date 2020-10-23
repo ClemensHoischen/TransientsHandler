@@ -1,0 +1,24 @@
+{
+	"deployment":{
+		"machine": "hf01",
+		"run_dir": "/Users/hoischen/CTA/Run_TH/"
+	},
+	"comet_options":
+	{
+		"local-ivo": "ivo://cta.north/transients_handler#comet_1",
+		"event_db": "comet_event_db/",
+		"allowed_types":
+		{
+			"swift_bat_grb_pos": ["SWIFT#BAT_GRB_Pos"],
+			"fermi_lat_offline_pos": ["Fermi#LAT_Offline_Pos"],
+			"fermi_gbm_gnd_pos": ["Fermi#GBM_Gnd_Pos"],
+			"fermi_gbm_fin_pos": ["Fermi#GBM_Fin_pos"],
+			"test_alert_type": ["test", "alert"]
+		},
+		"remote":
+		{
+			"nasa_gcn_1": "tcp:45.58.43.186:8099",
+			"nasa_gcn_2": "tcp:68.169.57.253:8099"
+		}
+	}
+}
