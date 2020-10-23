@@ -5,7 +5,7 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 
 from datetime import timedelta
-import processing.core_processing as cp
+import alert_processor as ap
 
 
 class custom_cuts_list(Enum):
@@ -55,7 +55,7 @@ def adjust_custom_coords(sci_alert, sci_case, obs_window):
         custom_time = sci_alert.alert_received_time + timedelta(minutes=30)
 
         # search for observation window with the new coordinates
-        custom_window = cp.find_observation_window(sci_alert, sci_case,
+        custom_window = ap.find_observation_window(sci_alert, sci_case,
                                                    custom_ra=custom_ra,
                                                    custom_dec=custom_dec,
                                                    custom_time=custom_time)

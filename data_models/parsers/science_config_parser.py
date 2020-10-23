@@ -6,7 +6,7 @@
 from astropy import units as u
 from astropy.units import Quantity
 
-import parsers.science_config as sci_cfg
+import data_models.science_config as sci_cfg
 
 
 def parse_allowed_alert_types(data):

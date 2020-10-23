@@ -1,4 +1,4 @@
-from Communicator import alert_summary
+from communicator import alert_summary
 
 
 class communicator:

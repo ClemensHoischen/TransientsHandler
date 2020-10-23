@@ -92,7 +92,8 @@ class CutCollection:
             cut.evaluate()
             # print(cut)
         for cut in self.custom_cuts:
-            custom_cut_module = importlib.import_module("." + cut.custom_origin, "custom_cuts")
+            custom_cut_module = importlib.import_module("alert_processor.custom_cuts." + cut.custom_origin)
+            print(custom_cut_module)
             try:
                 cut.actual_value = custom_cut_module.do_custom_cut(cut.cut_name, sci_alert,
                                                                    sci_case, obs_window)

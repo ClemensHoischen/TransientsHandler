@@ -6,15 +6,13 @@ This module handles the different processing steps of:
 - finalization after the core processing (e.g. reporting and communication)
 '''
 
-
-from processing import core_processing as core_proc
-import Communicator.communicator as cmn
+import communicator.communicator as cmn
 
 import astropy.units as u
 from astropy.units import Quantity
 
 
-from processing import observation_windows
+from alert_processor import observation_windows
 from utilities.observatories import CTA_North
 from astropy import units as u
 
@@ -102,7 +100,7 @@ class processing_manager:
 
     def core_processing(self):
         for match in self.matches:
-            core_proc.process_cases(match.science_alert, match.science_config)
+            process_cases(match.science_alert, match.science_config)
 
     def finalize_processing(self):
         accepted_matches = []

@@ -1,7 +1,7 @@
 import json
 
-import parsers.science_config_parser as sci_conf_parser
-from processing import cuts
+from data_models.parsers import science_config_parser as sci_conf_parser
+from alert_processor import cuts
 from utilities import observation_types
 
 

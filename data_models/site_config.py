@@ -1,6 +1,6 @@
 import json
 
-from parsers import site_config_parser as scp
+from data_models.parsers import site_config_parser as scp
 
 
 class site_configuration:
