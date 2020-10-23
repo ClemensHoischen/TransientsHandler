@@ -13,7 +13,6 @@ cycler==0.10.0
 decorator==4.4.2
 ephem==3.7.7.0
 healpy==1.14.0
-hessobs==0.2.1
 hyperlink==20.0.1
 idna==2.10
 importlib-metadata==2.0.0
