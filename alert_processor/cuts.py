@@ -64,7 +64,7 @@ class CutCollection:
             name = com_cut[0]
             req = com_cut[1][0]
             comp = com_cut[1][1]
-            self.register_cut(cut(name, req, comp, CutTypes.common_cuts))
+            self.register_cut(Cut(name, req, comp, CutTypes.common_cuts))
 
         custom_cuts_cfg = self.all_cut_data['CustomCuts']
         for cust_cut in custom_cuts_cfg.items():
@@ -73,7 +73,7 @@ class CutCollection:
             req = cust_cut[1][0]
             comp = cust_cut[1][1]
             origin = cust_cut[0].split(".")[0]
-            self.register_cut(cut(name, req, comp, CutTypes.custom_cuts, origin))
+            self.register_cut(Cut(name, req, comp, CutTypes.custom_cuts, origin))
 
     def register_cut(self, cut):
         ''' actual registration into common or custom cut list '''
@@ -87,28 +87,28 @@ class CutCollection:
         the current science alert.
 
         looks up the correct cutstom cut module for custom cuts.'''
-        for cut in self.common_cuts:
-            cut.actual_value = determine_value(cut, sci_alert, obs_window)
-            cut.evaluate()
+        for a_cut in self.common_cuts:
+            a_cut.actual_value = determine_value(a_cut, sci_alert, obs_window)
+            a_cut.evaluate()
             # print(cut)
-        for cut in self.custom_cuts:
-            custom_cut_module = importlib.import_module("alert_processor.custom_cuts." + cut.custom_origin)
+        for a_cut in self.custom_cuts:
+            custom_cut_module = importlib.import_module("alert_processor.custom_cuts." + a_cut.custom_origin)
             print(custom_cut_module)
             try:
-                cut.actual_value = custom_cut_module.do_custom_cut(cut.cut_name, sci_alert,
-                                                                   sci_case, obs_window)
-                cut.evaluate()
+                a_cut.actual_value = custom_cut_module.do_custom_cut(a_cut.cut_name, sci_alert,
+                                                                     sci_case, obs_window)
+                a_cut.evaluate()
                 # print(cut)
             except Exception as excep:
-                print("WARNING: Cut %s could not be executed: " % cut.cut_name, excep)
-                cut._set_failed()
+                print("WARNING: Cut %s could not be executed: " % a_cut.cut_name, excep)
+                a_cut._set_failed()
                 # print(cut)
 
     def execute_common_cuts(self, sci_alert, obs_window, sci_case):
         ''' execution of common cuts '''
-        for cut in self.common_cuts:
-            cut.actual_value = determine_value(cut, sci_alert, obs_window)
-            cut.evaluate()
+        for a_cut in self.common_cuts:
+            a_cut.actual_value = determine_value(a_cut, sci_alert, obs_window)
+            a_cut.evaluate()
             # print(cut)
 
     def common_cuts_results(self):
@@ -122,20 +122,20 @@ class CutCollection:
     def report_common_cuts(self):
         ''' compiles a report on the common cuts in string format '''
         rep = ""
-        for cut in self.common_cuts:
-            rep += str(cut.cut_name)
+        for a_cut in self.common_cuts:
+            rep += str(a_cut.cut_name)
             rep += " -- cut passed: "
-            rep += str(cut.passed)
+            rep += str(a_cut.passed)
             rep += "\n"
         return rep
 
     def report_custom_cuts(self):
         ''' compiles a report on the custom cuts in string format '''
         rep = ""
-        for cut in self.custom_cuts:
-            rep += str(cut.cut_name)
+        for a_cut in self.custom_cuts:
+            rep += str(a_cut.cut_name)
             rep += " -- cut passed: "
-            rep += str(cut.passed)
+            rep += str(a_cut.passed)
             rep += "\n"
         return rep
 
@@ -143,10 +143,10 @@ class CutCollection:
         ''' evaluation if all cuts have been passed and applied correctly '''
         all_passed_and_applied = True
         all_cuts = self.common_cuts + self.custom_cuts
-        for cut in all_cuts:
-            if not cut.performed:
+        for a_cut in all_cuts:
+            if not a_cut.performed:
                 all_passed_and_applied = False
-            if not cut.passed:
+            if not a_cut.passed:
                 all_passed_and_applied = False
         return all_passed_and_applied
 
@@ -161,13 +161,13 @@ def determine_value(cut, sci_alert, obs_window):
     cut_id = cut.cut_name
     if "." in cut.cut_name:
         cut_id = cut.cut_name.split(".")[0]
-    common_cut = common_cuts_impl(cut_id)
+    common_cut = CommonCutsImpl(cut_id)
     factory = cut_factory_switch(common_cut)
     cut_fact = CutFactory(factory, cut, sci_alert, obs_window)
     return cut_fact.cut_value
 
 
-class common_cuts_impl(Enum):
+class CommonCutsImpl(Enum):
     ''' available common cuts which are used to setup the cut correctly
      via the cut factory. '''
     from_parameter = "alert_parameter"
@@ -180,17 +180,17 @@ class common_cuts_impl(Enum):
 
 def cut_factory_switch(factory):
     ''' cut factory '''
-    switcher = {common_cuts_impl.from_parameter: cut_from_alert_parameter,
-                common_cuts_impl.max_delay: cut_max_delay,
-                common_cuts_impl.min_delay: cut_min_delay,
-                common_cuts_impl.currently_in_schedule: cut_currently_in_schedule,
-                common_cuts_impl.position_changed: cut_position_changed,
-                common_cuts_impl.position_uncertainty: cut_position_uncertainty}
+    switcher = {CommonCutsImpl.from_parameter: CutFromAlertParameter,
+                CommonCutsImpl.max_delay: CutMaxDelay,
+                CommonCutsImpl.min_delay: CutMinDelay,
+                CommonCutsImpl.currently_in_schedule: CutCurrentlyInSchedule,
+                CommonCutsImpl.position_changed: CutPositionChanged,
+                CommonCutsImpl.position_uncertainty: CutPositionUncertainty}
     func = switcher.get(factory)
     return func()
 
 
-class cut_from_alert_parameter:
+class CutFromAlertParameter:
     ''' apply a cut derived from a voevent parameter '''
     def determine_parameter(self, cut, sci_alert, obs_window):
         param = cut.cut_name.split(".")[1]
@@ -200,27 +200,27 @@ class cut_from_alert_parameter:
         return param_val
 
 
-class cut_max_delay:
+class CutMaxDelay:
     ''' cuts on the delay of a potentially found observation window. '''
     def determine_parameter(self, cut, sci_alert, obs_window):
         # print(obs_window.delay, type(obs_window.delay))
         return obs_window.delay
 
 
-class cut_min_delay:
+class CutMinDelay:
     ''' cut on the delay of a potentially found observation window. '''
     def determine_parameter(self, cut, sci_alert, obs_window):
         return obs_window.delay
 
 
-class cut_currently_in_schedule:
+class CutCurrentlyInSchedule:
     ''' cut to determine if this alert is already being observed. '''
     def determine_parameter(self, cut, sci_alert, obs_winodw):
         # TODO: needs access to current observations
         return True
 
 
-class cut_position_changed:
+class CutPositionChanged:
     ''' cut to determine if the position has changed with respect to the
         previous alert of the same astrophysical event. '''
     def determine_parameter(self, cut, sci_alert, obs_window):
@@ -238,7 +238,7 @@ class cut_position_changed:
         return pos_change
 
 
-class cut_position_uncertainty:
+class CutPositionUncertainty:
     ''' cut to determine by how much the position uncertainty has changed '''
     def determine_parameter(self, cut, sci_alert, obs_window):
         coords = vp.get_event_position(sci_alert)
@@ -304,7 +304,7 @@ def parse_value(in_val):
     return out_val
 
 
-class cut:
+class Cut:
     ''' base class for cuts, holding the name, required value, comparison, type of cut and actual value '''
     def __init__(self, name, required_value, comp, cut_type, custom_origin=None, actual_value=None):
         # print(" *** ", name, "***")
@@ -367,6 +367,7 @@ class cut:
         self.performed = True
 
     def convert_values_to_float(self):
+        ''' try convering to floats where applicable '''
         if isinstance(self.required_value, int):
             self.required_value = float(self.required_value)
         if isinstance(self.actual_value, int):

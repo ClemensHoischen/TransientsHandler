@@ -67,7 +67,7 @@ class HMI_alert:
         hmi_alert += "%s\n" % obs_window
         hmi_alert += "{}".format(coords)
 
-        self.hmi_alert = hmi_alert
+        return hmi_alert
 
 
 class SAG_notification:

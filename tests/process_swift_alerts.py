@@ -1,16 +1,18 @@
 # This script analysses swift alerts as they come in.
 
 import sys
+import os
 sys.path.append("/Users/hoischen/CTA/github/TransientsHandler")
 
 from broker_system import entry_points as th
-from utilities.testing_conditions import testing_conditions as tc
+from utilities.testing_conditions import TestingConditions as tc
 from datetime import datetime
 
 
 def main():
 
     TH_main_path = "/Users/hoischen/CTA/github/TransientsHandler"
+    os.environ['TH_site_config'] = TH_main_path + "/th_site_config.json"
 
     # TODO: argument parser
     # definitions_path = "followup_criteria_definition_swift_bat_example.json"

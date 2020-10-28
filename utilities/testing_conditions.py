@@ -1,7 +1,5 @@
-from datetime import timedelta
 
-
-class testing_conditions:
+class TestingConditions:
     def __init__(self, test_received_time):
         self.test_received_time = test_received_time
 
@@ -12,7 +10,7 @@ class testing_conditions:
 
 
 # Class that holds the resutls that are expected from the processing for a given alert and science configuration.
-class expected_results:
+class ExpectedResults:
     def __init__(self):
         pass
 

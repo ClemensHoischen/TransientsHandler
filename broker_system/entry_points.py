@@ -2,12 +2,12 @@ from alert_processor import processing_manager
 
 from data_models import site_config
 # from parsers import site_config_parser as site_cfg_parser
-from data_models.scientific_alert import scientific_alert_factory as saf
-from data_models.scientific_alert import inject_voevent_sci_alert_factory as inj_voevent_saf
-from data_models.scientific_alert import comet_voevent_sci_alert_factory as comet_voevent_saf
-from data_models.scientific_alert import sag_sci_alert_factory as sag_saf
-from data_models.scientific_alert import suss_sci_alert_factory as suss_saf
-from data_models.science_config import science_configuration
+from data_models.scientific_alert import ScientificAlertFactory as saf
+from data_models.scientific_alert import InjectVoeventSciAlertFactory as inj_voevent_saf
+from data_models.scientific_alert import CometVoeventSciAlertFactory as comet_voevent_saf
+from data_models.scientific_alert import SAGSciAlertFactory as sag_saf
+from data_models.scientific_alert import SUSSSciAlertFactory as suss_saf
+from data_models.science_config import ScienceConfiguration
 
 import communicator.communicator as comm
 
@@ -15,12 +15,11 @@ from broker_system import alert_verifyer
 import os
 from enum import Enum
 
-g_site_cfg_path = '/Users/hoischen/CTA/TransientsHandler/configurations/site_config.json'
 
 
 def setup_site_cfg():
-    site_cfg = site_config.site_configuration()
-    site_cfg.read_site_cfg(g_site_cfg_path)  # Query from DB later
+    site_cfg = site_config.SiteConfiguration()
+    site_cfg.read_site_cfg(os.environ['TH_site_config'])  # Query from DB later
     return site_cfg
 
 
@@ -31,7 +30,7 @@ def setup_science_cfgs(site_cfg):
 
     science_cfgs = []
     for cfg in cfgs:
-        sci = science_configuration(cfg)
+        sci = ScienceConfiguration(cfg)
         print(sci)
         science_cfgs.append(sci)
     return science_cfgs
@@ -64,7 +63,7 @@ def alert_entry(alert, origin, test_conditions=None):
     science_cfgs = setup_science_cfgs(site_cfg)
 
     allowed_alert_types = site_cfg.allowed_alert_types
-    proc_manager = processing_manager.processing_manager(science_cfgs, site_cfg)
+    proc_manager = processing_manager.ProcessingManager(science_cfgs, site_cfg)
 
     factory = factory_switch(origin)
     sci_alert_factory = saf(factory, alert)

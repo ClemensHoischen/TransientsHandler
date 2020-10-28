@@ -10,18 +10,20 @@ import data_models.science_config as sci_cfg
 
 
 def parse_allowed_alert_types(data):
+    ''' parsing the allowed alert types'''
     parsed_allowed_alert_types = []
-    for d in data:
-        allowed_type = sci_cfg.allowed_alert_types()
-        allowed_type.experiment = data[d][0]
-        allowed_type.alert_type = data[d][1]
+    for dat in data:
+        allowed_type = sci_cfg.AllowedAlertTypes()
+        allowed_type.experiment = data[dat][0]
+        allowed_type.alert_type = data[dat][1]
         parsed_allowed_alert_types.append(allowed_type)
 
     return parsed_allowed_alert_types
 
 
 def parse_proposal_details(data):
-    details = sci_cfg.proposal_details()
+    ''' parsing the proposal details section '''
+    details = sci_cfg.ProposalDetails()
     details.proposal_id = data['ProposalID']
     details.proposal_pi = data['ProposalPI']
     details.proposal_type = data["ProposalType"]
@@ -30,7 +32,8 @@ def parse_proposal_details(data):
 
 
 def parse_observation_config(data):
-    obs_config = sci_cfg.observation_config()
+    ''' parsing the observation config details section '''
+    obs_config = sci_cfg.ObservationConfig()
     obs_config.priority = data['Priority']
     obs_config.intended_action = data['IntendedAction']
     obs_config.urgency = data['Urgency']
@@ -38,12 +41,13 @@ def parse_observation_config(data):
     obs_config.exposure = Quantity(data['MaxExposure'])
     obs_config.number_blocks = data['NumberObservationBlocks']
     obs_config.pointing_mode.setup(data['PointingMode'])
-    obs_config.rta_configs.setup(data['RTA_configs'])
+    obs_config.sag_configs.setup(data['SAG_configs'])
     return obs_config
 
 
 def parse_observation_window_requiremnts(data):
-    window_reqs = sci_cfg.obs_window_requirements()
+    ''' parsing observation window reqs details '''
+    window_reqs = sci_cfg.ObsWindowRequirements()
 
     zenith = data['MaximumZenithAngle']
     window_reqs.max_zenith_angle = zenith[0] * u.Unit(zenith[1])
@@ -62,21 +66,12 @@ def parse_observation_window_requiremnts(data):
 
 
 def parse_notification_options(data):
-    notify_opts = sci_cfg.notification_options()
-    notify_opts.HMI_notify_on_received = data['NotifyHMI_OnReceived']
-    notify_opts.HMI_notify_on_accepted = data['NotifyHMI_OnCriteriaFulfilled']
-    notify_opts.SAG_notify_on_received = data['NotifySAG_OnReceived']
-    notify_opts.SAG_notify_on_accepted = data['NotifySAG_OnCriteriaFulfilled']
+    ''' parsing notofication options details '''
+    notify_opts = sci_cfg.NotificationOptions()
+    notify_opts.hmi_notify_on_received = data['NotifyHMI_OnReceived']
+    notify_opts.hmi_notify_on_accepted = data['NotifyHMI_OnCriteriaFulfilled']
+    notify_opts.sag_notify_on_received = data['NotifySAG_OnReceived']
+    notify_opts.sag_notify_on_accepted = data['NotifySAG_OnCriteriaFulfilled']
     notify_opts.fill()
 
     return notify_opts
-
-
-def parse_science_cases(data):
-    cases = data.items()
-    for case in cases:
-        print("-----")
-        print(case)
-        print("-----")
-    proc_cases = [sci_cfg.science_case(case) for case in cases]
-    return proc_cases

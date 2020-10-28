@@ -1,3 +1,12 @@
+'''
+This is the central definition point of scinence configurations.
+A science configuration is initated from the path of the file.
+The relevant parsing functionalitiy is contained in parsers/science_configparser.py
+
+All sub sections of the science configurations have there own object definition which
+is also defined here.
+'''
+
 import json
 
 from data_models.parsers import science_config_parser as sci_conf_parser
@@ -5,8 +14,10 @@ from alert_processor import cuts
 from utilities import observation_types
 
 
-class science_configuration:
+class ScienceConfiguration:
+    ''' main object containing the science configuration info '''
     def __init__(self, cfg_path):
+        ''' initiates the fill object from the config file path '''
         self.criteria_definition_path = cfg_path
         print("--->", cfg_path)
         with open(cfg_path, "r") as read_file:
@@ -15,13 +26,20 @@ class science_configuration:
         self.pointing_pattern = None
 
     def parse(self):
+        ''' parsing all sections of the config file one by one .
+            this is called by __init__()'''
         self.name = self.data['Name']
-        self.proposal_details = sci_conf_parser.parse_proposal_details(self.data["ProposalDetails"])
-        self.observation_config = sci_conf_parser.parse_observation_config(self.data["ObservationConfig"])
-        self.allowed_alert_types = sci_conf_parser.parse_allowed_alert_types(self.data['AllowedAlertTypes'])
+        proposal_data = self.data["ProposalDetails"]
+        self.proposal_details = sci_conf_parser.parse_proposal_details(proposal_data)
+        obs_cfg_data = self.data["ObservationConfig"]
+        self.observation_config = sci_conf_parser.parse_observation_config(obs_cfg_data)
+        allowed_types_data = self.data['AllowedAlertTypes']
+        self.allowed_alert_types = sci_conf_parser.parse_allowed_alert_types(allowed_types_data)
         self.cut_collection = cuts.CutCollection(self.data['ProcessingCuts'])
-        self.obsevation_window_reqs = sci_conf_parser.parse_observation_window_requiremnts(self.data['ObservationWindowRequirements'])
-        self.notification_opts = sci_conf_parser.parse_notification_options(self.data['Notifications'])
+        obs_window_req_data = self.data['ObservationWindowRequirements']
+        self.obsevation_window_reqs = sci_conf_parser.parse_observation_window_requiremnts(obs_window_req_data)
+        notify_data = self.data['Notifications']
+        self.notification_opts = sci_conf_parser.parse_notification_options(notify_data)
         self.detections_public = self.data['DetectionsPublic']
         self.followup_public = self.data["ActionPublic"]
 
@@ -31,8 +49,8 @@ class science_configuration:
         out += "%s" % self.proposal_details
         out += "%s\n" % self.observation_config
 
-        for at in self.allowed_alert_types:
-            out += "%s" % at
+        for alert_type in self.allowed_alert_types:
+            out += "%s" % alert_type
 
         out += "%s" % self.notification_opts
 
@@ -41,6 +59,7 @@ class science_configuration:
         return out
 
     def get_summary(self):
+        ''' produces a consice summary of the configuration for the alert summary '''
         # name  ,  priority , intended action
         out = "{: <20} {: <30}\n".format("Name:", self.name)
         out += "{: <20} {: <10}\n".format("Priority:", self.observation_config.priority)
@@ -49,14 +68,15 @@ class science_configuration:
         return out
 
 
-class observation_config:
+class ObservationConfig:
+    ''' object for the observation config section of the science configuration '''
     def __init__(self):
         self.priority = None
         self.intended_action = None
         self.urgency = None
         self.use_custom_coords = None
-        self.pointing_mode = pointing_mode()
-        self.rta_configs = rta_configs()
+        self.pointing_mode = PointingMode()
+        self.sag_configs = SAGConfigs()
 
     def __str__(self):
         head = "\n Observation Configuration\n"
@@ -65,7 +85,7 @@ class observation_config:
                    " * Urgency": self.urgency,
                    " * Use Custom Coordinates": self.use_custom_coords,
                    " * Pointing Mode": self.pointing_mode,
-                   " * RTA Configurations": self.rta_configs}
+                   " * SAG Configurations": self.sag_configs}
 
         out = head
         for name, val in out_map.items():
@@ -74,7 +94,8 @@ class observation_config:
         return out
 
 
-class allowed_alert_types:
+class AllowedAlertTypes:
+    ''' object for the allowed alert types secfion from the science configurations '''
     def __init__(self):
         self.experiment = None
         self.alert_type = None
@@ -85,7 +106,8 @@ class allowed_alert_types:
         return "{: <30} : {}".format(name, val)
 
 
-class proposal_details:
+class ProposalDetails:
+    ''' object for the proposal details section from the science configurations '''
     def __init__(self):
         self.proposal_id = None
         self.proposal_pi = None
@@ -109,7 +131,9 @@ class proposal_details:
         return out
 
 
-class obs_window_requirements:
+class ObsWindowRequirements:
+    ''' object for the observation window requirements
+        from the science configurtation '''
     def __init__(self):
         self.max_zenith_angle = None
         self.min_window_duration = None
@@ -133,73 +157,83 @@ class obs_window_requirements:
         return out
 
 
-class notification_options:
+class NotificationOptions:
+    ''' object for the notification options from the science configurations '''
     def __init__(self):
-        self.SAG_notify_on_received = None
-        self.SAG_notify_on_accepted = None
-        self.HMI_notify_on_received = None
-        self.HMI_notify_on_accepted = None
-        self.STS_notify_on_received = None
-        self.STS_notify_on_accepted = None
+        self.sag_notify_on_received = None
+        self.sag_notify_on_accepted = None
+        self.hmi_notify_on_received = None
+        self.hmi_notify_on_accepted = None
+        self.sts_notify_on_received = None
+        self.sts_notify_on_accepted = None
 
     def fill(self):
-        self.notify_map = {"HMI_notify_on_received": self.HMI_notify_on_received,
-                           "HMI_notify_on_accepted": self.HMI_notify_on_accepted,
-                           "SAG_notify_on_received": self.SAG_notify_on_received,
-                           "SAG_notify_on_accepted": self.SAG_notify_on_accepted,
-                           "STS_notify_on_received": self.STS_notify_on_received,
-                           "STS_notify_on_accepted": self.STS_notify_on_accepted}
+        ''' main functions to fill this object '''
+        self.notify_map = {"hmi_notify_on_received": self.hmi_notify_on_received,
+                           "hmi_notify_on_accepted": self.hmi_notify_on_accepted,
+                           "sag_notify_on_received": self.sag_notify_on_received,
+                           "sag_notify_on_accepted": self.sag_notify_on_accepted,
+                           "sts_notify_on_received": self.sts_notify_on_received,
+                           "sts_notify_on_accepted": self.sts_notify_on_accepted}
 
-        self.on_received_map = {"HMI_notify_on_received": self.HMI_notify_on_received,
-                                "SAG_notify_on_received": self.SAG_notify_on_received,
-                                "STS_notify_on_received": self.STS_notify_on_received}
+        self.on_received_map = {"hmi_notify_on_received": self.hmi_notify_on_received,
+                                "sag_notify_on_received": self.sag_notify_on_received,
+                                "sts_notify_on_received": self.sts_notify_on_received}
 
-        self.on_accepted_map = {"HMI_notify_on_accepted": self.HMI_notify_on_accepted,
-                                "SAG_notify_on_accepted": self.SAG_notify_on_accepted,
-                                "STS_notify_on_accepted": self.STS_notify_on_accepted}
+        self.on_accepted_map = {"hmi_notify_on_accepted": self.hmi_notify_on_accepted,
+                                "sag_notify_on_accepted": self.sag_notify_on_accepted,
+                                "sts_notify_on_accepted": self.sag_notify_on_accepted}
 
         self.notify_received_to = []
-        if self.HMI_notify_on_received:
+        if self.hmi_notify_on_received:
             self.notify_received_to.append("HMI")
-        if self.SAG_notify_on_received:
+        if self.sag_notify_on_received:
             self.notify_received_to.append("SAG")
-        if self.STS_notify_on_received:
+        if self.sts_notify_on_received:
             self.notify_received_to.append("STS")
 
         self.notify_accepted_to = []
-        if self.HMI_notify_on_accepted:
+        if self.hmi_notify_on_accepted:
             self.notify_accepted_to.append("HMI")
-        if self.SAG_notify_on_accepted:
+        if self.sag_notify_on_accepted:
             self.notify_accepted_to.append("SAG")
-        if self.STS_notify_on_accepted:
+        if self.sts_notify_on_accepted:
             self.notify_accepted_to.append("STS")
 
     def __str__(self):
-        sag_notices = "OnReceived: %s, OnAccepted: %s\n" % (self.SAG_notify_on_received, self.SAG_notify_on_accepted)
-        hmi_notices = "OnReceived: %s, OnAccepted: %s\n" % (self.HMI_notify_on_received, self.HMI_notify_on_accepted)
+        sag_notices = "OnReceived: %s, OnAccepted: %s\n" % (self.sag_notify_on_received,
+                                                            self.sag_notify_on_accepted)
+        hmi_notices = "OnReceived: %s, OnAccepted: %s\n" % (self.hmi_notify_on_received,
+                                                            self.hmi_notify_on_accepted)
         out = " * Notification Options:\n"
         out += "{: <30} : {}".format("   * Notifications to SAG", sag_notices)
         out += "{: <30} : {}".format("   * Notifications to HMI", hmi_notices)
         out += " notify on received:\n"
-        for to in self.notify_received_to:
-            out += " - %s " % to
+        for rec_to in self.notify_received_to:
+            out += " - %s " % rec_to
 
         return out
 
     def any_on_received(self):
-        on_received = any([self.SAG_notify_on_received,
-                           self.HMI_notify_on_received,
-                           self.STS_notify_on_received])
+        ''' retrieves all systems that should be notified
+        whenever a cetain follow-up opprotunity is received'''
+        on_received = any([self.sag_notify_on_received,
+                           self.hmi_notify_on_received,
+                           self.sts_notify_on_received])
         return on_received
 
     def any_on_accepted(self):
-        on_acceptd = any([self.SAG_notify_on_accepted,
-                          self.HMI_notify_on_accepted,
-                          self.STS_notify_on_accepted])
+        ''' retrieves all systems that should be notified
+        whenever a certain follow-up opportuntiy fulfills all
+        criteria '''
+        on_acceptd = any([self.sag_notify_on_accepted,
+                          self.hmi_notify_on_accepted,
+                          self.sts_notify_on_accepted])
         return on_acceptd
 
 
-class pointing_mode:
+class PointingMode:
+    ''' object for the pointing mode section of the science configurtaion '''
     def __init__(self):
         self.obs_type = None
 
@@ -207,19 +241,21 @@ class pointing_mode:
         return str(self.obs_type)
 
     def setup(self, data):
+        ''' main setup function selecting the specific pointing type '''
         if data['Type'] == "Wobble":
             return self.setup_wobble(data)
         else:
             return None
 
     def setup_wobble(self, data):
-        obs_mode = observation_types.wobble()
-        obs_mode.offset = data['offset']
-        obs_mode.angle = data['angle']
+        ''' setup function for wobble type '''
+        obs_mode = observation_types.Wobble(data['offset'],
+                                            data['angle'])
         return obs_mode
 
 
-class rta_configs:
+class SAGConfigs:
+    ''' object containg the SAG configurations from the science configuration '''
     def __init__(self):
         self.default = True
         self.short_transient = False
@@ -228,5 +264,6 @@ class rta_configs:
         return "Default: %s, Short Transients: %s" % (self.default, self.short_transient)
 
     def setup(self, data):
+        ''' main setup function '''
         self.short_transient = data['ShortTransient']
         self.default = data['Default']

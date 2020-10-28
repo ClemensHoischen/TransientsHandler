@@ -31,7 +31,7 @@ def radec_from_altaztime(alt, az, time, site):
     ''' converts ra dec coordinates to alt az at a given time and site location'''
     alt_az = AltAz(alt=Angle(float(alt), unit=u.deg),
                    az=Angle(float(az), unit=u.deg),
-                   location=site.Location,
+                   location=site.location,
                    obsTime=Time(time))
     ra_dec = alt_az.transform_to(FK5(equinox='J2000'))
     return ra_dec.ra / u.deg, ra_dec.dec / u.deg
@@ -56,7 +56,7 @@ def source_alt(obs_time, ra, dec, site):
     position = SkyCoord(ra, dec, unit=u.deg)
     alert_time = Time(obs_time)
     source_alt_az = position.transform_to(AltAz(obstime=alert_time,
-                                                location=site.Location))
+                                                location=site.location))
     return source_alt_az.alt / u.deg
 
 
@@ -65,14 +65,14 @@ def source_az(obs_time, ra, dec, site):
     position = SkyCoord(ra, dec, unit=u.deg)
     alert_time = Time(obs_time)
     source_alt_az = position.transform_to(AltAz(obstime=alert_time,
-                                                location=site.Location))
+                                                location=site.location))
     return source_alt_az.az / u.deg
 
 
 def sun_alt(obs_time, site):
     ''' calculates the altitude of the sun at time 'obs_time' at location 'site' '''
     sun = get_sun(Time(obs_time)).transform_to(AltAz(obstime=Time(obs_time),
-                                                     location=site.Location))
+                                                     location=site.location))
     return sun.alt / u.deg
 
 
@@ -80,9 +80,9 @@ def moon_alt(obs_time, site):
     ''' calculates the altitude of the moon at time 'obs_time' at location 'site' '''
     moon = ephem.Moon()
     obs = ephem.Observer()
-    obs.lon = str(site.Lon / u.deg)
-    obs.lat = str(site.Lat / u.deg)
-    obs.elev = site.Height / u.m
+    obs.lon = str(site.lon / u.deg)
+    obs.lat = str(site.lat / u.deg)
+    obs.elev = site.height / u.m
     obs.date = obs_time
     moon.compute(obs)
 
@@ -95,9 +95,9 @@ def moon_phase(obs_time, site):
     ''' calculates moon phase in percent at time 'obs_time' at location 'site' '''
     moon = ephem.Moon()
     obs = ephem.Observer()
-    obs.lon = str(site.Lon / u.deg)
-    obs.lat = str(site.Lat / u.deg)
-    obs.elev = site.Height / u.m
+    obs.lon = str(site.lon / u.deg)
+    obs.lat = str(site.lat / u.deg)
+    obs.elev = site.height / u.m
     obs.date = obs_time
     moon.compute(obs)
 
@@ -110,9 +110,9 @@ def moon_az(obs_time, site):
     ''' calculates the moons azimuth at time 'obs_time' at location 'site' '''
     moon = ephem.Moon()
     obs = ephem.Observer()
-    obs.lon = str(site.Lon / u.deg)
-    obs.lat = str(site.Lat / u.deg)
-    obs.elev = site.Height / u.m
+    obs.lon = str(site.lon / u.deg)
+    obs.lat = str(site.lat / u.deg)
+    obs.elev = site.height / u.m
     obs.date = obs_time
     moon.compute(obs)
 
@@ -122,19 +122,18 @@ def moon_az(obs_time, site):
 def moon_dist(obs_time, ra, dec, site):
     ''' calculates the angular distance between the moon and a
         target at ra, dec at time 'obs_time' at location 'site' '''
-    site_loc = site.Location
-    a_moon_alt = Angle(moon_alt(obs_time) * u.deg, unit=u.deg)
-    a_moon_az = Angle(moon_az(obs_time) * u.deg, unit=u.deg)
-    a_source_alt = Angle(source_alt(obs_time, ra, dec) * u.deg, unit=u.deg)
-    a_source_az = Angle(source_az(obs_time, ra, dec) * u.deg, unit=u.deg)
+    a_moon_alt = Angle(moon_alt(obs_time, site) * u.deg, unit=u.deg)
+    a_moon_az = Angle(moon_az(obs_time, site) * u.deg, unit=u.deg)
+    a_source_alt = Angle(source_alt(obs_time, ra, dec, site) * u.deg, unit=u.deg)
+    a_source_az = Angle(source_az(obs_time, ra, dec, site) * u.deg, unit=u.deg)
 
-    a_source_altaz = AltAz(alt=a_source_alt, az=a_source_az, location=site_loc, obstime=obs_time)
-    a_moon_altaz = AltAz(alt=a_moon_alt, az=a_moon_az, location=site_loc, obstime=obs_time)
+    a_source_altaz = AltAz(alt=a_source_alt, az=a_source_az, location=site.location, obstime=obs_time)
+    a_moon_altaz = AltAz(alt=a_moon_alt, az=a_moon_az, location=site.location, obstime=obs_time)
     a_moon_sep = a_moon_altaz.separation(a_source_altaz)
 
     # print "Distance between source and moon = %s deg" % (moon_sep.deg)
 
-    return a_moon_sep.deg
+    return a_moon_sep
 
 
 class ObservationWindow:
@@ -164,7 +163,7 @@ class ObservationWindow:
 
         self.site = observatory_site
         if not self.site:
-            self.site = observatories.CTA_North
+            self.site = observatories.CTANorth
 
         if obs_window_cfg:
             self.source_zenith_max = obs_window_cfg.max_zenith_angle
@@ -236,16 +235,16 @@ class ObservationWindow:
         position = SkyCoord(ra.value, dec.value, unit=ra.unit)
         # print(position)
 
-        altaz_frame = AltAz(obstime=self.test_times, location=self.site.Location)
+        altaz_frame = AltAz(obstime=self.test_times, location=self.site.location)
         sun_alt_azs = get_sun(self.test_times).transform_to(altaz_frame)
         source_alt_az = position.transform_to(AltAz(obstime=self.test_times,
-                                                    location=self.site.Location))
+                                                    location=self.site.location))
 
         moon = ephem.Moon()
         obs = ephem.Observer()
-        obs.lon = str(self.site.Lon / u.deg)
-        obs.lat = str(self.site.Lat / u.deg)
-        obs.elev = self.site.Height / u.m
+        obs.lon = str(self.site.lon / u.deg)
+        obs.lat = str(self.site.lat / u.deg)
+        obs.elev = self.site.height / u.m
 
         moon_alts = np.zeros_like(self.test_dates)
         moon_azs = np.zeros_like(self.test_dates)
@@ -260,7 +259,7 @@ class ObservationWindow:
 
         moon_alt_az = AltAz(alt=Angle(moon_alts, unit=u.deg),
                             az=Angle(moon_azs, unit=u.deg),
-                            location=self.site.Location, obstime=self.test_times)
+                            location=self.site.location, obstime=self.test_times)
 
         # store information for plotting
         self.sun_alts = sun_alt_azs.alt

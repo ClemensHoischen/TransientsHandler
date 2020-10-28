@@ -18,7 +18,7 @@
 			"offset": "0.7 deg",
 			"angle": "0.7 deg"
 		},
-		"RTA_configs": {
+		"SAG_configs": {
 			"ShortTransient": false,
 			"Default": true
 		},

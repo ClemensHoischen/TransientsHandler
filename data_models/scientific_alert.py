@@ -6,48 +6,48 @@ import voeventparse as vp
 from datetime import datetime
 
 
-class inject_voevent_sci_alert_factory:
+class InjectVoeventSciAlertFactory:
     def generate_scientific_alert(self, voevent_path):
-        sci_alert = scientific_alert()
-        with open(voevent_path, 'rb') as f:
-            voevent = vp.load(f)
+        sci_alert = ScientificAlert()
+        with open(voevent_path, 'rb') as file:
+            voevent = vp.load(file)
         sci_alert.from_voevent(voevent)
         return sci_alert
 
 
-class comet_voevent_sci_alert_factory:
+class CometVoeventSciAlertFactory:
     def generate_scientific_alert(self, voevent):
-        sci_alert = scientific_alert()
+        sci_alert = ScientificAlert()
         sci_alert.from_voevent(voevent)
         return sci_alert
 
 
-class sag_sci_alert_factory:
+class SAGSciAlertFactory:
     def generate_scientific_alert(self, sag_alert):
-        sci_alert = scientific_alert()
-        sci_alert._from_SAG_alert(sag_alert)
+        sci_alert = ScientificAlert()
+        sci_alert._from_sag_alert(sag_alert)
         return sci_alert
 
 
-class suss_sci_alert_factory:
+class SUSSSciAlertFactory:
     def generate_scientific_alert(self, suss_alert):
-        sci_alert = scientific_alert()
-        sci_alert._from_SUSS_alert(suss_alert)
+        sci_alert = ScientificAlert()
+        sci_alert._from_suss_alert(suss_alert)
         return sci_alert
 
 
-class scientific_alert_factory:
+class ScientificAlertFactory:
     def __init__(self, sci_alert_factory, received_alert):
         self.factory = sci_alert_factory
         self.sci_alert = self.factory.generate_scientific_alert(received_alert)
 
 
-class scientific_alert:
+class ScientificAlert:
     def __init__(self):
         # origin parameters
-        self.isExternal = False
-        self.isInternalSAG = False
-        self.isInternalSUSS = False
+        self.is_external = False
+        self.is_internal_sag = False
+        self.is_internal_suss = False
 
         # core parameters from external events
         self.ivorn = None
@@ -79,11 +79,11 @@ class scientific_alert:
     def register_processing_results(self):
         pass
 
-    def _from_SAG_alert(self, sag_alert):
+    def _from_sag_alert(self, sag_alert):
         # Need to know interface
         pass
 
-    def _from_SUSS_alert(self, suss_alert):
+    def _from_suss_alert(self, suss_alert):
         # Need to know interface
         pass
 
@@ -103,18 +103,18 @@ class scientific_alert:
             out += "{: <30}: {}\n".format(name, val)
         return out
 
-    def archive_sci_alert():
+    def archive_sci_alert(self):
         # Needs DB api
         pass
 
-    def update_archived_alert():
+    def update_archived_alert(self):
         # Needs DB api
         pass
 
-    def query_nearby_preceeding_alerts(search_radius, time_range):
+    def query_nearby_preceeding_alerts(self, search_radius, time_range):
         # needs DB and/or api (will try voeventdb.remote for mini-acada)
         pass
 
-    def query_nearby_known_sources(search_radius):
+    def query_nearby_known_sources(self, search_radius):
         # needs catalogue infrastructure
         pass

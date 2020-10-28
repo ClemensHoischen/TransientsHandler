@@ -1,22 +1,20 @@
 '''
 Contains all the classes needed for scheduling blocks
 '''
-import scheduling_block_factory as sbf
 
 
-class TH_SchedulingBlock:
+class THSchedulingBlock:
     def __init__(self):
         self.sched_block_id = None
         self.proposal = SbProposal()
         self.configuration = SbConfiguration()
-        self.ObservationBlocks = []
+        self.observation_blocks = []
 
-    def BuildBlock(self, input):
-        block_factory = sbf.sb_factory()
+    def build_block(self, input):
         pass
 
 
-class TH_ObservationBlock:
+class THObservationBlock:
     def __init__(self):
         self.observation_block_id = None
         self.source = ObSource()

@@ -1,15 +1,11 @@
 {
 	"SiteConfig": {
-		"site_location": "CTA_North",
+		"site": "CTA_North",
 		"system_state": "active",
-		"connected_systems": {
-			"HMI": "hmi.cta_north.ctao",
-			"SAG": "sag.cta_north.ctao",
-			"STS": "sts.cta_north",
-			"MTS": "mts.suss.ctao"
-		},
 		"science_config_path": "/Users/hoischen/CTA/github/TransientsHandler/science_configurations",
-		"allowed_alerts": ["SWIFT#BAT_GRB_Pos",
-						   "Fermi#LAT_Offline_Pos"]
+		"allowed_alerts": {
+			"swift_grbs": "SWIFT#BAT_GRB_Pos",
+			"lat_offline_grbs" :"Fermi#LAT_Offline_Pos"
+		}
 	}
 }

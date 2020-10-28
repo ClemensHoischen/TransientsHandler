@@ -1,5 +1,5 @@
 import os
-from broker_system.brokers.broker_base import broker
+from broker_system.broker_base import broker
 
 
 class remote_broker:
