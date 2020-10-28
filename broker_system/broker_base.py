@@ -59,6 +59,7 @@ class broker:
 
         self._configure()
         self._start()
+        return True
 
     def stop_broker(self):
         if self._broker_State is not broker_states.online:
@@ -68,7 +69,6 @@ class broker:
     def reconfigure_broker(self):
         self._configure()
         self._start()
-        pass
 
     def generate_start_command(self):
         return ""
