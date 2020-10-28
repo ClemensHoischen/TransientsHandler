@@ -7,6 +7,7 @@ from datetime import datetime
 
 
 class InjectVoeventSciAlertFactory:
+    ''' factory for generating science alerts for injected VOEVent alerts '''
     def generate_scientific_alert(self, voevent_path):
         sci_alert = ScientificAlert()
         with open(voevent_path, 'rb') as file:
@@ -16,6 +17,7 @@ class InjectVoeventSciAlertFactory:
 
 
 class CometVoeventSciAlertFactory:
+    ''' factory for generating science alerts for voevents received by Comet '''
     def generate_scientific_alert(self, voevent):
         sci_alert = ScientificAlert()
         sci_alert.from_voevent(voevent)
@@ -23,6 +25,7 @@ class CometVoeventSciAlertFactory:
 
 
 class SAGSciAlertFactory:
+    ''' factory for generating science alerts for alerts from SAG '''
     def generate_scientific_alert(self, sag_alert):
         sci_alert = ScientificAlert()
         sci_alert._from_sag_alert(sag_alert)
@@ -30,6 +33,7 @@ class SAGSciAlertFactory:
 
 
 class SUSSSciAlertFactory:
+    ''' factory for generating science alerts for for alerts from SUSS '''
     def generate_scientific_alert(self, suss_alert):
         sci_alert = ScientificAlert()
         sci_alert._from_suss_alert(suss_alert)
@@ -37,12 +41,17 @@ class SUSSSciAlertFactory:
 
 
 class ScientificAlertFactory:
+    ''' base factory for scientific alerts '''
     def __init__(self, sci_alert_factory, received_alert):
         self.factory = sci_alert_factory
         self.sci_alert = self.factory.generate_scientific_alert(received_alert)
 
 
 class ScientificAlert:
+    ''' class containg the base information for any scientific alert
+        handled by the TH. Can be created from different input science alerts
+        via the different factories contained in this module. '''
+
     def __init__(self):
         # origin parameters
         self.is_external = False
@@ -67,6 +76,7 @@ class ScientificAlert:
         self.custom_observation_coordinates = []
 
     def from_voevent(self, voevent):
+        ''' fill the alert from voevents '''
         self.alert = voevent
         self.is_voevent = True
         self.ivorn = voevent.attrib['ivorn']

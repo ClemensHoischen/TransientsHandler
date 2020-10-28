@@ -65,8 +65,6 @@ def process_cases(sci_alert, science_case):
         print("  --> All cuts passed. -> Initiating further actions.")
 
 
-
-
 class ProcessingManager:
     ''' core class of the processing manager holding the configurations and
     the matches of science cases and the alert.

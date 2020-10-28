@@ -1,7 +1,14 @@
+''' module of the communicator that produces the output and distributes
+it to other ACADA sub-systems according to configuration.
+
+Also generates the alert summaries and stores them.
+'''
+
 from communicator import alert_summary
 
 
-class communicator:
+class Communicator:
+    ''' maion communicator class '''
     def __init__(self):
         self.all_matches = None
         self.accepted_matches = None
@@ -53,6 +60,7 @@ class communicator:
 
 
 class HMI_alert:
+    ''' class for alerts aimed at the HMI '''
     def __init__(self, sci_alert, sci_cfg, notice_str):
         self.sci_alert = sci_alert
         self.sci_cfg = sci_cfg
@@ -71,10 +79,12 @@ class HMI_alert:
 
 
 class SAG_notification:
+    ''' class for notoficiations aimed at the SAG '''
     def __init__(self):
         pass
 
 
 class STS_alert:
+    ''' class  for alerts aimed at the STS '''
     def __init__(self):
         pass

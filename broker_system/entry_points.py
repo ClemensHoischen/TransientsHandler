@@ -78,7 +78,7 @@ def alert_entry(alert, origin, test_conditions=None):
 
     print("Alert is valid and processing is initiated...")
 
-    communicator = comm.communicator()
+    communicator = comm.Communicator()
 
     proc_manager.process(sci_alert, communicator)
 

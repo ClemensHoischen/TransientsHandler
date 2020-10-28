@@ -9,6 +9,7 @@ class CTANorth:
         self.height = 2000 * u.m
         self.location = EarthLocation(lat=self.lat, lon=self.lon,
                                       height=self.height)
+        self.name = "CTA North"
 
 # TODO: use correct height
 class CTASouth:
@@ -18,3 +19,4 @@ class CTASouth:
         self.height = 1835 * u.m
         self.location = EarthLocation(lat=self.lat, lon=self.lon,
                                       height=self.height)
+        self.name = "CTA South"
