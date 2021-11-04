@@ -3,4 +3,4 @@ numpy==1.19.1
 voevent_parse==1.0.3
 matplotlib==3.3.0
 pyephem==3.7.7.0
-zope==5.0
+zope==5.3
